@@ -1,19 +1,59 @@
+create database b3egw3goupxrzhhztdav;
 
- create table levadura( lev_id_levadura int not null, lev_denominacion varchar(80) not null, lev_formato varchar(30) not null, lev_perfil varchar(30), lev_tipo_lev
-varchar(1) not null, lev_temperatura decimal(8,3) not null );
+create table agua( agu_id_agua int not null, agu_denominacion varchar(80) not null, agu_dureza decimal (8,3) not null, agu_cal decimal(8,3) not null, agu_cloro decimal(8,3) not null, agu_precio decimal(8,3) not null, primary key (agu_id_agua));
 
+create table agua_min(agm_id_auga int not null, agm_mineral varchar(40) not null, primary key(agm_id_auga, agm_mineral) foreign key(agm_id_auga) references agua( agu_id_agua));
+
+create table malta (mal_id_malta int not null, mal_denominacion varchar(80) not null, mal_tipo varchar(20) not null, mal_color varchar(20) not null, mal_tueste varchar(20) not null, mal_sabor varchar(20) not null,  mal_ahumado varchar(20), mal_precio decimal(8,3) not null primary key (mal_id_malta));
 
 create table paises( pai_id_pais int not null, pai_nombre_pais varchar(80) not null );
 
 alter table paises add (primary key (pai_id_pais));
 
+create table lupulo (lup_id_lupulo int not null, lup_denominacion varchar(80) not null, lup_amargor varchar(20) not null, lup_sabor varchar(20) not null, lup_aroma varchar(20) not null,  lup_id_pais int not null, primary key(lup_id_lupulo) foreign key(lu_id_pais) references paises (pai_id_pais));
 
-create table agua( agu_id_agua int not null, agu_denominacion varchar(80) not
-null, agu_dureza decimal (8,3) not null, agu_cal decimal(8,3) not null, agu_cloro decimal(8,3) not null, agu_precio decimal(8,3) not null, primary key (agu_id_agua));
+create table materiales(mat_id_material int not null, mat_denominacion varchar(80) not null, mat_texto varchar(400), primary key(mat_id_material));
 
+create table levadura( lev_id_levadura int not null, lev_denominacion varchar(80) not null, lev_formato varchar(30) not null, lev_perfil varchar(30), lev_tipo_lev varchar(1) not null, lev_temperatura decimal(8,3) not null );
 
+create table malta_molida(mam_id_malta int not null, mam_id_material int not null, mam_veces int not null, primary key (mam_id_malta, mam_id_material) foreign key (mam_id_malta) references malta(mal_id_malta), foreign key (mam_id_material) references materiales (mat_id_material));
 
-create table paises( pai_id_pais int not null, pai_nombre_pais varchar(80) not null, );
+create table mosto( mos_id_agua int not null, mos_id_material int not null, mos_id_malta int not null,mos_id_material1 int not null,mos_tiempo_maceracion decimal(8,3) not null, mos_temperatura decimal(8,3) not null, mos_veces int not null, primary key (mos_id_agua, mos_id_material, mos_id_malta, mos_id_material1), foreign key(mos_id_agua) references agua( agu_id_agua), foreign key(mos_id_material) references materiales (mat_id_material), foreign key (mos_id_malta, mos_id_material1) references malta_molida(mam_id_malta, mam_id_material));
+
+create table liquido_dulce(lid_id_agua int not null, lid_id_material int not null, lid_id_malta int not null, lid_id_material1 int not null, lid_id_lupulo int not null, lid_tiempo_coccion decimal(8,3) not null, primary key(lid_id_agua, lid_id_material , lid_id_malta , lid_id_material1, lid_id_lupulo), foreign key(lid_id_lupulo) references lupulo(lup_id_lupulo), foreign key(lid_id_agua,lid_id_material, lid_id_malta,lid_id_material) references mosto(mos_id_agua, mos_id_material, mos_id_malta, mos_id_material1));
+
+create table liquido_frio( lif_id_material2 int not null, lif_id_agua int not null, lif_id_material int not null, lif_id_malta int not null, lif_id_material1 int not null, lif_id_lupulo int not null, lif_metodo varchar(40) not null, lif_temperatura decimal(8,3) not null, primary key (lif_id_material2, lif_id_agua, lif_id_material, lif_id_malta, lif_id_material1, lif_id_lupulo) foreign key(lif_id_material2) references materiales (mat_id_material), foreign (lif_id_agua, lif_id_material, lif_id_malta, lif_id_material1, lif_id_lupulo ) references liquido_dulce(lid_id_agua, lid_id_material, lid_id_malta, lid_id_material1, lid_id_lupulo)); 
+
+create table mosto_sin_f (
+msf_id_material3 int not null,
+msf_id_levadura int not null,
+msf_id_material2 int not null,
+msf_id_agua int not null,
+msf_id_material int not null,
+msf_id_malta int not null,
+msf_id_material1 int not null,
+msf_id_lupulo int not null,
+msf_tiempo_oxidacion  decimal(8,3) not null,
+msf_tiempo_fermentacion decimal(8,3) not null,
+msf_temperatura decimal(8,3) not null,
+primary key(msf_id_material3 ,msf_id_levadura,msf_id_material2 ,msf_id_agua,msf_id_material ,msf_id_malta,msf_id_material1, msf_id_lupulo) ,
+foreign key(msf_id_material3) references materiales (mat_id_material),
+foreign key(msf_id_levadura) references levadura (lev_id_levadura),
+foreign key(msf_id_material2 ,msf_id_agua,msf_id_material ,msf_id_malta,msf_id_material1, msf_id_lupulo) references 
+liquido_frio(lif_id_material2 ,lif_id_agua,lif_id_material ,lif_id_malta,lif_id_material1, lif_id_lupulo)
+);
+
+create table cerveza (cer_año int not null, cer_numero_sec bigint not null, cer_id_material4 int not null, cer_id_material3 int not null,  cer_id_levadura int not null,  cer_id_material2 int not null,  cer_id_agua int not null,  cer_id_material int not null,  cer_id_malta int not null,  cer_id_material1 int not null,  cer_id_lupulo int not null,  cer_tiempo_trasvase decimal(8,3) not null, primary key (cer_año, cer_numero_sec), foreign key (cer_id_material4) references materiales(mat_id_material), foreign key( cer_id_material3,  cer_id_levadura,  cer_id_material2,  cer_id_agua,  cer_id_material,  cer_id_malta,  cer_id_material1,  cer_id_lupulo) references mosto_sin_f (msf_id_material3,msf_id_levadura , msf_id_material2, msf_id_agua, msf_id_material,msf_id_malta,msf_id_material1, msf_id_lupulo));
+
+create table cerveza_emb_cab(cec_fecha date not null, cec_numero bigint not null, cec_año int not null, cec_numero_sec bigint not null, primary key(cec_fecha, cec_numero), FOREIGN KEY (cec_año,cec_numero_sec) references cerveza(cer_año, cer_numero_sec));
+
+create table cerveza_emb_lin(
+    cel_fecha date not null,
+    cel_numero bigint not null,
+    cel_id_material int not null,
+    primary key(cel_fecha,cel_numero,cel_id_material),
+    foreign key (cel_id_material) references materiales (mat_id_material),
+    foreign key (cel_fecha,cel_numero) references cerveza_emb_cab (cec_fecha, cec_numero));
 
 
 
@@ -135,23 +175,12 @@ insert cerveza values(1969, 1239, 6,6,6,6,6,11,1,1,6,66666.666 );
 
 
 
-create table cerveza_emb_cab(cec_fecha date not null, cec_numero bigint not null, cec_año int not null, cec_numero_sec bigint not null, primary key(cec_fecha, cec_numero), FOREIGN KEY (cec_año,cec_numero_sec) references cerveza(cer_año, cer_numero_sec));
-
 insert cerveza_emb_cab values ('1999/05/03', 1, 1990, 1234);
 insert cerveza_emb_cab values ('1969/05/04', 2, 1990, 1235);
 insert cerveza_emb_cab values ('1970/05/05', 3, 1993, 1236);
 insert cerveza_emb_cab values ('1971/05/03', 4, 1996, 1237);
 insert cerveza_emb_cab values ('1973/05/03', 5, 1974, 1238);
 insert cerveza_emb_cab values ('1975/05/03', 6, 1969, 1239);
-
-
-create table cerveza_emb_lin(
-    cel_fecha date not null,
-    cel_numero bigint not null,
-    cel_id_material int not null,
-    primary key(cel_fecha,cel_numero,cel_id_material),
-    foreign key (cel_id_material) references materiales (mat_id_material),
-    foreign key (cel_fecha,cel_numero) references cerveza_emb_cab (cec_fecha, cec_numero));
 
 
 insert cerveza_emb_lin values('1969/05/04', 2,7);
