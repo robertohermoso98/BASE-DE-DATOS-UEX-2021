@@ -1,0 +1,3 @@
+en la tabla de cervezas no sabemos si estamos haciendo bien los foreign key.
+
+
