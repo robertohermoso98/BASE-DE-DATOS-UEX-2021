@@ -1,11 +1,12 @@
 
+drop database b3egw3goupxrzhhztdav;
 create database b3egw3goupxrzhhztdav;
 
 use b3egw3goupxrzhhztdav;
 
 create table agua( agu_id_agua int not null, agu_denominacion varchar(80) not null, agu_dureza decimal (8,3) not null, agu_cal decimal(8,3) not null, agu_cloro decimal(8,3) not null, agu_precio decimal(8,3) not null, primary key (agu_id_agua));
 
-create table agua_min(agm_id_auga int not null, agm_mineral varchar(40) not null, primary key(agm_id_auga, agm_mineral), foreign key(agm_id_auga) references agua( agu_id_agua));
+create table agua_min(agm_id_agua int not null, agm_mineral varchar(40) not null, primary key(agm_id_agua, agm_mineral), foreign key(agm_id_agua) references agua( agu_id_agua));
 
 create table malta (mal_id_malta int not null, mal_denominacion varchar(80) not null, mal_tipo varchar(20) not null, mal_color varchar(20) not null, mal_tueste varchar(20) not null, mal_sabor varchar(20) not null,  mal_ahumado varchar(20), mal_precio decimal(8,3) not null, primary key (mal_id_malta));
 
@@ -16,7 +17,7 @@ alter table paises add (primary key (pai_id_pais));
 create table lupulo (lup_id_lupulo int not null, lup_denominacion varchar(80) not null, lup_amargor varchar(20) not null, lup_sabor varchar(20) not null, lup_aroma varchar(20) not null,  lup_id_pais int not null, primary key(lup_id_lupulo), foreign key(lup_id_pais) references paises (pai_id_pais));
 
 create table materiales(mat_id_material int not null, mat_denominacion varchar(80) not null, mat_texto varchar(400), primary key(mat_id_material));
-drop table levadura;
+
 create table levadura( lev_id_levadura int not null, lev_denominacion varchar(80) not null, lev_formato varchar(30) not null, lev_perfil varchar(30), lev_tipo_lev varchar(1) not null, lev_temperatura decimal(8,3) not null, primary key(lev_id_levadura) );
 
 create table malta_molida(mam_id_malta int not null, mam_id_material int not null, mam_veces int not null, primary key (mam_id_malta, mam_id_material), foreign key (mam_id_malta) references malta(mal_id_malta), foreign key (mam_id_material) references materiales (mat_id_material));
