@@ -2,15 +2,43 @@ drop database  b3egw3goupxrzhhztdav;
 create database b3egw3goupxrzhhztdav;
 use b3egw3goupxrzhhztdav;
 
-create table agua( agu_id_agua int not null, agu_denominacion varchar(80) not null, agu_dureza decimal (8,3) not null, agu_cal decimal(8,3) not null, agu_cloro decimal(8,3) not null, agu_precio decimal(8,3) not null, primary key (agu_id_agua));
+create table agua(
+ agu_id_agua int not null,
+ agu_denominacion varchar(80) not null,
+ agu_dureza decimal (8,3) not null, 
+ agu_cal decimal(8,3) not null, 
+ agu_cloro decimal(8,3) not null, 
+ agu_precio decimal(8,3) not null,
+ primary key (agu_id_agua)
+ );
 
-create table agua_min(agm_id_auga int not null, agm_mineral varchar(40) not null, primary key(agm_id_auga, agm_mineral), foreign key(agm_id_auga) references agua( agu_id_agua));
+create table agua_min(
+agm_id_auga int not null, 
+agm_mineral varchar(40) not null, 
+primary key(agm_id_auga, agm_mineral),
+foreign key(agm_id_auga) references agua( agu_id_agua)
+on delete cascade
+on update cascade
+);
 
-create table malta (mal_id_malta int not null, mal_denominacion varchar(80) not null, mal_tipo varchar(20) not null, mal_color varchar(20) not null, mal_tueste varchar(20) not null, mal_sabor varchar(20) not null,  mal_ahumado varchar(20), mal_precio decimal(8,3) not null, primary key (mal_id_malta));
+create table malta (
+mal_id_malta int not null,
+ mal_denominacion varchar(80) not null,
+ mal_tipo varchar(20) not null, 
+ mal_color varchar(20) not null,
+ mal_tueste varchar(20) not null, 
+ mal_sabor varchar(20) not null,  
+ mal_ahumado varchar(20), 
+ mal_precio decimal(8,3) not null,
+ primary key (mal_id_malta)
+ );
 
-create table paises( pai_id_pais int not null, pai_nombre_pais varchar(80) not null );
+create table paises( 
+pai_id_pais int not null, 
+pai_nombre_pais varchar(80) not null,
+primary key (pai_id_pais)
+);
 
-alter table paises add (primary key (pai_id_pais));
 
 create table lupulo (
 lup_id_lupulo int not null, 
@@ -21,9 +49,18 @@ lup_denominacion varchar(80) not null,
  lup_id_pais int not null, primary key(lup_id_lupulo),
  foreign key(lup_id_pais) 
  references paises (pai_id_pais)
+  on delete cascade
+    on update cascade
+
  );
 
-create table materiales(mat_id_material int not null, mat_denominacion varchar(80) not null, mat_texto varchar(400), primary key(mat_id_material));
+create table materiales(
+mat_id_material int not null, 
+mat_denominacion varchar(80) not null, 
+mat_texto varchar(400), 
+primary key(mat_id_material)
+
+);
 
 create table levadura(
  lev_id_levadura int not null,
@@ -33,6 +70,7 @@ create table levadura(
  lev_tipo_lev varchar(1) not null, 
  lev_temperatura decimal(8,3) not null ,
  primary key (lev_id_levadura)
+
  );
 
 create table malta_molida(
@@ -41,9 +79,25 @@ mam_id_malta int not null,
  mam_veces int not null, 
  primary key (mam_id_malta, mam_id_material),
  foreign key (mam_id_malta) references malta(mal_id_malta),
- foreign key (mam_id_material) references materiales (mat_id_material));
+ foreign key (mam_id_material) references materiales (mat_id_material)
+ on delete cascade
+on update cascade);
 
-create table mosto( mos_id_agua int not null, mos_id_material int not null, mos_id_malta int not null,mos_id_material1 int not null,mos_tiempo_maceracion decimal(8,3) not null, mos_temperatura decimal(8,3) not null, mos_veces int not null, primary key (mos_id_agua, mos_id_material, mos_id_malta, mos_id_material1), foreign key(mos_id_agua) references agua( agu_id_agua), foreign key(mos_id_material) references materiales (mat_id_material), foreign key (mos_id_malta, mos_id_material1) references malta_molida(mam_id_malta, mam_id_material));
+create table mosto( 
+mos_id_agua int not null,
+ mos_id_material int not null,
+ mos_id_malta int not null,
+ mos_id_material1 int not null,
+ mos_tiempo_maceracion decimal(8,3) not null,
+ mos_temperatura decimal(8,3) not null, 
+ mos_veces int not null,
+ primary key (mos_id_agua, mos_id_material, mos_id_malta, mos_id_material1), 
+ foreign key(mos_id_agua) references agua( agu_id_agua), 
+ foreign key(mos_id_material) references materiales (mat_id_material), 
+ foreign key (mos_id_malta, mos_id_material1) references malta_molida(mam_id_malta, mam_id_material)
+ on delete cascade
+    on update cascade
+ );
 
 create table liquido_dulce(
 lid_id_agua int not null,
@@ -56,6 +110,9 @@ lid_id_agua int not null,
  foreign key(lid_id_lupulo) references lupulo(lup_id_lupulo), 
  foreign key(lid_id_agua,lid_id_material, lid_id_malta,lid_id_material1)
  references mosto(mos_id_agua, mos_id_material, mos_id_malta, mos_id_material1)
+  on delete cascade
+    on update cascade
+
  );
 
 create table liquido_frio( 
@@ -70,7 +127,11 @@ lif_temperatura decimal(8,3) not null,
 primary key (lif_id_material2, lif_id_agua, lif_id_material, lif_id_malta, lif_id_material1, lif_id_lupulo), 
 foreign key(lif_id_material2) references materiales (mat_id_material), 
 foreign key(lif_id_agua, lif_id_material, lif_id_malta, lif_id_material1, lif_id_lupulo ) 
-references liquido_dulce(lid_id_agua, lid_id_material, lid_id_malta, lid_id_material1, lid_id_lupulo)); 
+references liquido_dulce(lid_id_agua, lid_id_material, lid_id_malta, lid_id_material1, lid_id_lupulo)
+ on delete cascade
+    on update cascade
+
+); 
 
 create table mosto_sin_f (
 msf_id_material3 int not null,
@@ -89,7 +150,7 @@ foreign key(msf_id_material3) references materiales (mat_id_material),
 foreign key(msf_id_levadura) references levadura (lev_id_levadura),
 foreign key(msf_id_material2 ,msf_id_agua,msf_id_material ,msf_id_malta,msf_id_material1, msf_id_lupulo) 
 references liquido_frio(lif_id_material2 ,lif_id_agua,lif_id_material ,lif_id_malta,lif_id_material1, lif_id_lupulo)
-on delete cascade
+ on delete cascade
     on update cascade
 );
 
@@ -110,8 +171,8 @@ cer_año int not null,
  foreign key (cer_id_material4) references materiales(mat_id_material),
  foreign key( cer_id_material3,  cer_id_levadura,  cer_id_material2,  cer_id_agua,  cer_id_material,  cer_id_malta,  cer_id_material1,  cer_id_lupulo) 
  references mosto_sin_f (msf_id_material3,msf_id_levadura , msf_id_material2, msf_id_agua, msf_id_material,msf_id_malta,msf_id_material1, msf_id_lupulo)
-    on delete cascade
-    on update cascade
+on delete cascade
+on update cascade
  );
 
 create table cerveza_emb_cab(
@@ -122,8 +183,8 @@ cec_numero_sec bigint not null,
 primary key(cec_fecha, cec_numero),
 FOREIGN KEY (cec_año,cec_numero_sec) 
 references cerveza(cer_año, cer_numero_sec)
-   on delete cascade
-    on update cascade
+on delete cascade
+on update cascade
 );
 
 create table cerveza_emb_lin(
@@ -144,6 +205,8 @@ insert agua values(3,'agua3',12345.123,12345.123,12345.123,12345.123);
 insert agua values(4,'agua4',12345.123,12345.123,12345.123,12345.123);
 insert agua values(5,'agua5',12345.123,12345.123,12345.123,12345.123);
 insert agua values(6,'agua6',12345.123,12345.123,12345.123,12345.123);
+insert agua values(7,'agua7',12345.123,12345.123,12345.123,12345.123);
+insert agua values(8,'agua8',12345.123,12345.123,12345.123,12345.123);
 
 insert agua_min values(1,'aguaMIn1');
 insert agua_min values(2,'aguaMIn3');
@@ -151,6 +214,8 @@ insert agua_min values(3,'agua2');
 insert agua_min values(4,'aguafgsdfg');
 insert agua_min values(5,'agua del risco');
 insert agua_min values(6,'agua del pantano de tu puto pueblo');
+insert agua_min values(7,'agua delsdgf risco');
+insert agua_min values(8,'agua del pansdgstano de tblo');
 
 
 insert malta values(1,'malta','malta','malta','malsdfgta','malta','madfglta',12344.123);
@@ -159,6 +224,8 @@ insert malta values(3,'malta','malta','malta','malta','malta','malta',12345.193)
 insert malta values(4,'malta','malta','malsdgfta','malsdfgta','maltsdfga','malta',12445.123);
 insert malta values(5,'malta','malta','malta','malta','malta','malta',12345.423);
 insert malta values(6,'malta','mfdgalta','malta','malta','masdfglta','malta',12445.123);
+insert malta values(7,'malta','malta','malta','malta','malta','malta',12345.423);
+insert malta values(8,'mafglta','mta','alta','lta','fglta','mta',12495.123);
 
 
 insert paises values(1,'Catalá');
@@ -204,9 +271,12 @@ insert malta_molida values(3,3,3);
 insert malta_molida values(4,4,4);
 insert malta_molida values(5,5,5);
 insert malta_molida values(6,6,6);
+insert malta_molida values(7,7,7);
+insert malta_molida values(8,8,8);
 
 
 insert mosto values (1,1,2,2,12345.123,12345.123,1);
+insert mosto values (1,1,8,8,12345.123,12345.123,1);
 insert mosto values (2,3,4,4,12345.123,12346.123,1);
 insert mosto values (3,5,6,6,12345.123,12347.123,1);
 insert mosto values (4,7,5,5,12345.123,12348.123,1);
@@ -214,11 +284,13 @@ insert mosto values (5,9,3,3,12345.123,12349.123,1);
 insert mosto values (6,11,1,1,12345.123,12322.123,1);
 
 insert liquido_dulce values(1,1,2,2,1,12345.123);
+insert liquido_dulce values(1,1,8,8,1,12345.123);
 insert liquido_dulce values(2,3,4,4,2,12344.123);
 insert liquido_dulce values(3,5,6,6,3,12335.23);
 insert liquido_dulce values(4,7,5,5,4,12234.123);
 insert liquido_dulce values(5,9,3,3,5,99999.999);
 insert liquido_dulce values(6,11,1,1,6,12121.121);
+
 
 insert liquido_frio values(1,1,1,2,2,1,'Del pita pita del, Del pita pita del', 11111.111);
 insert liquido_frio values(2,2,3,4,4,2,'Yameri humbo Yarameridá',22222.222);

@@ -36,10 +36,12 @@ public class Conexion {
 
     public boolean abrirConexion() throws Exception {
         try {
-            String userName = "ukimmrsyremx5quf";
-            String password = "gA817OVGnbPG7ukVKYco";
+
+
+            String userName = "root";
+            String password = "xcGUjA7Z@";
             String database = "b3egw3goupxrzhhztdav";
-            String url = "jdbc:mysql://ukimmrsyremx5quf:gA817OVGnbPG7ukVKYco@b3egw3goupxrzhhztdav-mysql.services.clever-cloud.com:3306/b3egw3goupxrzhhztdav";
+            String url = "jdbc:mysql://localhost:3306/" + database;
             Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
             con = DriverManager.getConnection(url, userName, password);
         } catch (ClassNotFoundException e) {

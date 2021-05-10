@@ -14,31 +14,33 @@
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="554.0" prefWidth="284.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.Controller">
    <bottom>
-      <HBox prefHeight="46.0" prefWidth="577.0" BorderPane.alignment="CENTER">
+      <HBox prefHeight="65.0" prefWidth="481.0" BorderPane.alignment="CENTER">
          <children>
-            <Separator prefWidth="20.0" visible="false" />
-            <Separator prefHeight="18.0" prefWidth="123.0" visible="false" />
+            <Separator prefHeight="3.0" prefWidth="159.0" visible="false" />
             <Button mnemonicParsing="false" onAction="#aceptar" prefHeight="34.0" prefWidth="71.0" text="Aceptar" />
+            <Separator prefHeight="18.0" prefWidth="23.0" visible="false" />
             <Separator prefWidth="20.0" visible="false" />
          </children>
       </HBox>
    </bottom>
    <center>
-      <GridPane prefHeight="200.0" prefWidth="500.0" BorderPane.alignment="CENTER">
+      <GridPane BorderPane.alignment="CENTER">
         <columnConstraints>
           <ColumnConstraints hgrow="SOMETIMES" maxWidth="257.0" minWidth="147.0" prefWidth="147.0" />
             <ColumnConstraints hgrow="SOMETIMES" maxWidth="134.0" minWidth="134.0" prefWidth="134.0" />
         </columnConstraints>
         <rowConstraints>
-            <RowConstraints minHeight="5.0" prefHeight="5.0" vgrow="SOMETIMES" />
-            <RowConstraints minHeight="5.0" prefHeight="5.0" vgrow="SOMETIMES" />
-            <RowConstraints minHeight="5.0" prefHeight="5.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <Label text="lif_id_material2">
+            <Label text="msf_id_material3">
                <font>
                   <Font name="Ubuntu" size="16.0" />
                </font>
@@ -46,7 +48,7 @@
                   <Insets bottom="10.0" left="10.0" top="10.0" />
                </GridPane.margin>
             </Label>
-            <Label text="lif_id_agua" GridPane.rowIndex="1">
+            <Label text="msf_id_levadura" GridPane.rowIndex="1">
                <font>
                   <Font name="Ubuntu" size="16.0" />
                </font>
@@ -54,7 +56,7 @@
                   <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                </GridPane.margin>
             </Label>
-            <Label text="lif_id_material" GridPane.rowIndex="2">
+            <Label text="msf_id_material2" GridPane.rowIndex="2">
                <font>
                   <Font name="Ubuntu" size="16.0" />
                </font>
@@ -62,7 +64,7 @@
                   <Insets bottom="10.0" left="10.0" top="10.0" />
                </GridPane.margin>
             </Label>
-            <Label text="lif_id_malta" GridPane.rowIndex="3">
+            <Label text="msf_id_agua" GridPane.rowIndex="3">
                <font>
                   <Font name="Ubuntu" size="16.0" />
                </font>
@@ -70,7 +72,7 @@
                   <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                </GridPane.margin>
             </Label>
-            <Label text="lif_id_material1" GridPane.rowIndex="4">
+            <Label text="msf_id_material" GridPane.rowIndex="4">
                <font>
                   <Font name="Ubuntu" size="16.0" />
                </font>
@@ -78,7 +80,7 @@
                   <Insets bottom="10.0" left="10.0" top="10.0" />
                </GridPane.margin>
             </Label>
-            <Label text="lif_id_lupulo" GridPane.rowIndex="5">
+            <Label text="msf_id_malta" GridPane.rowIndex="5">
                <font>
                   <Font name="Ubuntu" size="16.0" />
                </font>
@@ -86,34 +88,60 @@
                   <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                </GridPane.margin>
             </Label>
-            <TextField fx:id="lif_id_material2" GridPane.columnIndex="1">
+            <Label text="msf_id_material1" GridPane.rowIndex="6">
+               <font>
+                  <Font name="Ubuntu" size="16.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets left="5.0" />
+               </GridPane.margin>
+            </Label>
+            <Label text="msf_id_lupulo" GridPane.rowIndex="7">
+               <font>
+                  <Font name="Ubuntu" size="16.0" />
+               </font>
+               <GridPane.margin>
+                  <Insets left="5.0" />
+               </GridPane.margin>
+            </Label>
+            <TextField fx:id="msf_id_material3" GridPane.columnIndex="1">
                <GridPane.margin>
                   <Insets bottom="10.0" left="10.0" right="5.0" top="10.0" />
                </GridPane.margin>
             </TextField>
-            <TextField fx:id="lif_id_agua" GridPane.columnIndex="1" GridPane.rowIndex="1">
+            <TextField fx:id="msf_id_levadura" GridPane.columnIndex="1" GridPane.rowIndex="1">
                <GridPane.margin>
                   <Insets bottom="10.0" left="10.0" right="5.0" top="10.0" />
                </GridPane.margin>
             </TextField>
-            <TextField fx:id="lif_id_material" GridPane.columnIndex="1" GridPane.rowIndex="2">
+            <TextField fx:id="msf_id_material2" GridPane.columnIndex="1" GridPane.rowIndex="2">
                <GridPane.margin>
                   <Insets bottom="10.0" left="10.0" right="5.0" top="10.0" />
                </GridPane.margin>
             </TextField>
-            <TextField fx:id="lif_id_malta" GridPane.columnIndex="1" GridPane.rowIndex="3">
+            <TextField fx:id="msf_id_agua" GridPane.columnIndex="1" GridPane.rowIndex="3">
                <GridPane.margin>
                   <Insets bottom="10.0" left="10.0" right="5.0" top="10.0" />
                </GridPane.margin>
             </TextField>
-            <TextField fx:id="lif_id_material1" GridPane.columnIndex="1" GridPane.rowIndex="4">
+            <TextField fx:id="msf_id_material" GridPane.columnIndex="1" GridPane.rowIndex="4">
                <GridPane.margin>
                   <Insets bottom="10.0" left="10.0" right="5.0" top="10.0" />
                </GridPane.margin>
             </TextField>
-            <TextField fx:id="lif_id_lupulo" GridPane.columnIndex="1" GridPane.rowIndex="5">
+            <TextField fx:id="msf_id_malta" GridPane.columnIndex="1" GridPane.rowIndex="5">
                <GridPane.margin>
                   <Insets bottom="10.0" left="10.0" right="5.0" top="10.0" />
+               </GridPane.margin>
+            </TextField>
+            <TextField fx:id="msf_id_material1" GridPane.columnIndex="1" GridPane.rowIndex="6">
+               <GridPane.margin>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </GridPane.margin>
+            </TextField>
+            <TextField fx:id="msf_id_lupulo" GridPane.columnIndex="1" GridPane.rowIndex="7">
+               <GridPane.margin>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                </GridPane.margin>
             </TextField>
          </children>
@@ -122,7 +150,7 @@
    <top>
       <HBox prefHeight="43.0" prefWidth="600.0" BorderPane.alignment="CENTER">
          <children>
-            <Label fx:id="idScena" text="Eliminar Liquido frio">
+            <Label fx:id="idScena" text="Eliminar Mosto_sin_f">
                <font>
                   <Font name="Ubuntu Bold" size="28.0" />
                </font>

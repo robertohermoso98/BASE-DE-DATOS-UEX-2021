@@ -206,7 +206,7 @@
    <top>
       <HBox prefHeight="25.0" prefWidth="471.0" BorderPane.alignment="CENTER">
          <children>
-            <Label text="Insertar Cervezas">
+            <Label fx:id="idScena" text="Insertar Cervezas">
                <font>
                   <Font name="Ubuntu Bold" size="19.0" />
                </font>

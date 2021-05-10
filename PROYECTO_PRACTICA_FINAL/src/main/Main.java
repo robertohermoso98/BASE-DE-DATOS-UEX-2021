@@ -1,5 +1,6 @@
 package main;
 
+import controller.Controller;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -9,9 +10,17 @@ import javafx.stage.Stage;
 
 public class Main extends Application {
 
+
     @Override
     public void start(Stage primaryStage) throws Exception{
-        AnchorPane root = FXMLLoader.load(getClass().getResource("../fxml/main.fxml"));
+      //  AnchorPane root = FXMLLoader.load(getClass().getResource("../fxml/main.fxml"));
+
+        FXMLLoader loader = new FXMLLoader(getClass().
+                getResource("../fxml/main.fxml"));
+//Recuperamos el controller
+        AnchorPane root = loader.load();
+        Controller controller=(Controller) loader.getController();
+
         primaryStage.setTitle("BASE DE DATOS");
         primaryStage.setScene(new Scene(root, 1300, 600));
         primaryStage.show();

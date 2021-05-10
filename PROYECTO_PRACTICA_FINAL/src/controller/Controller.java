@@ -9,6 +9,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -17,22 +18,19 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import main.Main;
+
 import java.net.URL;
-import java.sql.ResultSet;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Iterator;
 import java.util.LinkedList;
 
 public class Controller {
 
-    private Conexion c=new Conexion();
+    private Conexion c = new Conexion();
     private String tablaSelecionada;
     private Pane view;
     private int SecuenciaSQL;
-
-
-
 
     @FXML
     private BorderPane IDBoreder;
@@ -40,24 +38,58 @@ public class Controller {
     @FXML
     private TableView<LinkedList[]> table;
 
+    @FXML // sirve para identificar que pestaña se ha abierto
+    private Label idScena;
 
-
-    private Pane getPage(String vi){
+    private Pane getPage(String vi) {
         Pane vie = new BorderPane();
-        try{
-            URL fileUrl = Main.class.getResource("../fxml/"+vi+".fxml");
-            vie= new FXMLLoader().load(fileUrl);
-        }catch (Exception e){
+        try {
+            URL fileUrl = Main.class.getResource("../fxml/" + vi + ".fxml");
+            vie = new FXMLLoader().load(fileUrl);
+
+        } catch (Exception e) {
             e.getStackTrace();
         }
         return vie;
     }
 
-    public void laGranSolucion(String nombreDeLaCosaABuscar) {
+    private int identificarSecuencia(String s) {
+        if (s.equals("Eliminar Cervezas")) {
+            return 0;
+        }
+        if (s.equals("Eliminar Liquido frio")) {
+            return 1;
+        }
+        if (s.equals("Eliminar Mosto_sin_f")) {
+            return 2;
+        }
+        if (s.equals("Insertar Cervezas")) {
+            return 3;
+        }
+        if (s.equals("Insert Liquido frio")) {
+            return 4;
+        }
+        if (s.equals("Insertar Mosto_sin_f")) {
+            return 5;
+        }
+        if (s.equals("")) {
+            return 6;
+        }
+        if (s.equals("Mod. Liquido frio")) {
+            return 7;
+        }
+        if (s.equals("Modificar Mosto_sin_f")) {
+            return 8;
+        } else {
+            return 999;
+        }
+    }
+
+    private void laGranSolucion(String nombreDeLaCosaABuscar) {
         // si la talb atiene dato sse los elimino
-        int cont2=table.getColumns().size();
+        int cont2 = table.getColumns().size();
         if (table.getColumns().size() > 0) {
-            table.getColumns().remove(0,cont2);
+            table.getColumns().remove(0, cont2);
 
         }
         LinkedList<String> listaNombresColumnas;
@@ -208,56 +240,50 @@ public class Controller {
 
     @FXML
     void deleteCerveza(ActionEvent event) {
-        SecuenciaSQL=0;
-        IDBoreder.setRight( getPage("deletecerveza"));
+        IDBoreder.setRight(getPage("deletecerveza"));
     }
 
     @FXML
     void deleteLiquido(ActionEvent event) {
-        SecuenciaSQL=1;
-        IDBoreder.setRight( getPage("deleteliquidofrio"));
+        IDBoreder.setRight(getPage("deleteliquidofrio"));
     }
 
     @FXML
     void deleteMosto(ActionEvent event) {
-        SecuenciaSQL=2;
-        IDBoreder.setRight( getPage("deletemostosinf"));
+        IDBoreder.setRight(getPage("deletemostosinf"));
     }
 
     @FXML
     void insertCerveza(ActionEvent event) {
-        SecuenciaSQL=3;
-        IDBoreder.setRight( getPage("insertcerveza"));
+        IDBoreder.setRight(getPage("insertcerveza"));
     }
 
     @FXML
     void insertLiquido(ActionEvent event) {
-        SecuenciaSQL=4;
-        IDBoreder.setRight( getPage("insertliquidofrio"));
+        IDBoreder.setRight(getPage("insertliquidofrio"));
     }
 
     @FXML
     void insertMosto(ActionEvent event) {
-        SecuenciaSQL=5;
-        IDBoreder.setRight( getPage("insertmostosinf"));
+        IDBoreder.setRight(getPage("insertmostosinf"));
     }
 
     @FXML
     void modifyCerveza(ActionEvent event) {
-        SecuenciaSQL=6;
-        IDBoreder.setRight( getPage("modifycerveza"));
+
+        IDBoreder.setRight(getPage("modifycerveza"));
     }
 
     @FXML
     void modifyLiquido(ActionEvent event) {
-        SecuenciaSQL=7;
-        IDBoreder.setRight( getPage("modifyliquidofrio"));
+
+        IDBoreder.setRight(getPage("modifyliquidofrio"));
     }
 
     @FXML
     void modifyMosto(ActionEvent event) {
-        SecuenciaSQL=8;
-        IDBoreder.setRight( getPage("modifymostosinf"));
+
+        IDBoreder.setRight(getPage("modifymostosinf"));
     }
 
     @FXML
@@ -274,8 +300,6 @@ public class Controller {
     void MostrarSentencia3(ActionEvent event) {
 
     }
-    //insert cerveza values(1969, 1239, 6,6,6,6,6,11,1,1,6,66666.666 );
-
 
 /*
     OBJETOS FXML DE LIQUIDO FRIO
@@ -305,11 +329,11 @@ public class Controller {
     @FXML
     private TextField lif_temperatura;
 
-/*
-OBJETOS DE FXML CERVEZA
- */
-@FXML
-private TextField cer_numero_sec;
+    /*
+     OBJETOS DE FXML CERVEZA
+         */
+    @FXML
+    private TextField cer_numero_sec;
 
     @FXML
     private TextField cer_id_material;
@@ -343,31 +367,70 @@ private TextField cer_numero_sec;
 
     @FXML
     private TextField cer_id_tiempo_trasvase;
+    /*
+    OBJETOS DE FXML mosto
+     */
+    @FXML
+    private TextField msf_id_material3;
+
+    @FXML
+    private TextField msf_id_levadura;
+
+    @FXML
+    private TextField msf_id_material2;
+
+    @FXML
+    private TextField msf_id_agua;
+
+    @FXML
+    private TextField msf_id_material;
+
+    @FXML
+    private TextField msf_id_malta;
+
+    @FXML
+    private TextField msf_id_material1;
+
+    @FXML
+    private TextField msf_id_lupulo;
+
+    @FXML
+    private TextField msf_tiempo_oxidacion;
+
+    @FXML
+    private TextField msf_tiempo_fermentacion;
+
+    @FXML
+    private TextField msf_temperatura;
+
 
 
     @FXML
     void aceptar(ActionEvent event) {
-        elimCerveza("1238","1974");
+        System.out.println(identificarSecuencia(idScena.getText().toString()));
         try {
             c.abrirConexion();
         } catch (Exception e) {
             // mostrar mensaje de error al abrir la conexion
         }
-        String enviar="";
-        switch (SecuenciaSQL){
+        switch (identificarSecuencia(idScena.getText().toString())) {
             case 0:
-                elimCerveza("1238","1974");
+                elimCerveza();
                 break;
             case 1:
+                eliminarLiquido();
                 break;
             case 2:
+                eleminarMosto();
                 break;
             case 3:
+                insertarCerveza();
                 break;
             case 4:
-                enviar = "insert liquido_frio values( "+lif_id_material2.getText()+","+lif_id_agua.getText()+","+lif_id_material.getText()+","+lif_id_malta.getText()+","+lif_id_material1.getText()+","+lif_id_lupulo.getText()+","+lif_metodo.getText()+","+lif_temperatura.getText()+");";
+                insertarLiquido();
                 break;
             case 5:
+                insertarMosto();
                 break;
             case 6:
                 break;
@@ -376,35 +439,153 @@ private TextField cer_numero_sec;
             case 8:
                 break;
         }
-        // hay dentor va el String concadenando los datos
-
-
-        try {
-            c.getSt().executeQuery(enviar);
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
     }
 
-    private void elimCerveza(String numSec, String anio){
-        LinkedList<String> nombresBorrar=new LinkedList<String>();
+    private void elimCerveza() {
+
         try {
             c.abrirConexion();
         } catch (Exception e) {
             e.printStackTrace();
         }
         try {
-            Statement st = c.getCon().createStatement();
-            ResultSet rs = st.executeQuery("select cec_fecha from cerveza_emb_cab where cec_numero_sec="+numSec+" and cec_año="+anio+";");
-            while (rs.next()) {
-                nombresBorrar.add(rs.getString(1));
-            }
+            String s = "delete cerveza , cerveza_emb_cab , cerveza_emb_lin from cerveza , cerveza_emb_cab , cerveza_emb_lin where cer_año=cec_año and cer_numero_sec=cec_numero_sec and cec_numero=cel_numero and cec_fecha=cel_fecha and cer_año= ? and cer_numero_sec= ?;";
+            PreparedStatement ss = c.getCon().prepareStatement(s);
+            ss.setString(1, cer_año.getText().toString());
+            ss.setString(2, cer_numero_sec.getText().toString());
+            ss.execute();
+            c.cerrarConexion();
+
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+    }
+
+    private void eliminarLiquido(){
+        try {
+            c.abrirConexion();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            String s = "delete liquido_frio, mosto_sin_f, cerveza,cerveza_emb_cab , cerveza_emb_lin from liquido_frio, mosto_sin_f, cerveza,cerveza_emb_cab , cerveza_emb_lin where lif_id_material2= ? and lif_id_agua= ? and lif_id_material= ? and lif_id_malta= ? and lif_id_material1= ? and lif_id_lupulo= ? and lif_id_material2=msf_id_agua and lif_id_agua=msf_id_agua and lif_id_material=msf_id_material and lif_id_malta=msf_id_malta and lif_id_material1=msf_id_material1 and lif_id_lupulo=msf_id_lupulo and cer_id_material3=msf_id_material3 and cer_id_levadura=msf_id_levadura and cer_id_material2=msf_id_material2 and cer_id_material=msf_id_material and cer_id_malta=msf_id_malta and cer_id_material1=msf_id_material1 and cer_id_lupulo=msf_id_lupulo and cer_año=cec_año and cer_numero_sec=cec_numero_sec and cec_numero=cel_numero and cec_fecha=cel_fecha ;";
+            PreparedStatement ss = c.getCon().prepareStatement(s);
+            ss.setString(1, lif_id_material2.getText().toString());
+            ss.setString(2, lif_id_agua.getText().toString());
+            ss.setString(3, lif_id_material.getText().toString());
+            ss.setString(4, lif_id_malta.getText().toString());
+            ss.setString(5, lif_id_material1.getText().toString());
+            ss.setString(6, lif_id_lupulo.getText().toString());
+            ss.execute();
+            c.cerrarConexion();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+    }
+
+    private void eleminarMosto(){
+    try {
+            c.abrirConexion();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            String s = "delete mosto_sin_f,cerveza,cerveza_emb_cab , cerveza_emb_lin  from mosto_sin_f,cerveza,cerveza_emb_cab , cerveza_emb_lin  where msf_id_material3= ? and msf_id_levadura= ? and msf_id_material2= ? and msf_id_agua= ? and msf_id_material= ? and msf_id_malta= ? and msf_id_material1= ? and msf_id_lupulo= ? and cer_id_material3=msf_id_material3 and cer_id_levadura=msf_id_levadura and cer_id_material2=msf_id_material2 and cer_id_material=msf_id_material and cer_id_malta=msf_id_malta and cer_id_material1=msf_id_material1 and cer_id_lupulo=msf_id_lupulo and cer_año=cec_año and cer_numero_sec=cec_numero_sec and cec_numero=cel_numero and cec_fecha=cel_fecha  ;";
+            ;
+            PreparedStatement ss = c.getCon().prepareStatement(s);
+            ss.setString(1, msf_id_material3.getText().toString());
+            ss.setString(2,msf_id_levadura.getText().toString());
+            ss.setString(3, msf_id_material2.getText().toString());
+            ss.setString(4, msf_id_agua.getText().toString());
+            ss.setString(5, msf_id_material.getText().toString());
+            ss.setString(6, msf_id_malta.getText().toString());
+            ss.setString(7, msf_id_material1.getText().toString());
+            ss.setString(8, msf_id_lupulo.getText().toString());
+            ss.execute();
+            c.cerrarConexion();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+    }
+
+    private void insertarMosto(){
+        try {
+            c.abrirConexion();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            String s = "insert into mosto_sin_f values(?,?,?,?,?,?,?,?,?,?,?);";
+            PreparedStatement ss = c.getCon().prepareStatement(s);
+            ss.setString(1, msf_id_material3.getText().toString());
+            ss.setString(2,msf_id_levadura.getText().toString());
+            ss.setString(3, msf_id_material2.getText().toString());
+            ss.setString(4, msf_id_agua.getText().toString());
+            ss.setString(5, msf_id_material.getText().toString());
+            ss.setString(6, msf_id_malta.getText().toString());
+            ss.setString(7, msf_id_material1.getText().toString());
+            ss.setString(8, msf_id_lupulo.getText().toString());
+            ss.setString(9, msf_tiempo_oxidacion.getText().toString());
+            ss.setString(10, msf_tiempo_fermentacion.getText().toString());
+            ss.setString(11, msf_temperatura.getText().toString());
+            ss.execute();
+            c.cerrarConexion();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+    }
+
+    private void insertarCerveza(){
+     try {
+            c.abrirConexion();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            String s = "insert into cerveza values(?,?,?,?,?,?,?,?,?,?,?,?);";
+            PreparedStatement ss = c.getCon().prepareStatement(s);
+            ss.setString(1, cer_numero_sec.getText().toString());
+            ss.setString(2,cer_id_material.getText().toString());
+            ss.setString(3, cer_id_material3.getText().toString());
+            ss.setString(4, cer_id_levadura.getText().toString());
+            ss.setString(5, cer_id_material2.getText().toString());
+            ss.setString(6, cer_id_agua.getText().toString());
+            ss.setString(7, cer_id_material1.getText().toString());
+            ss.setString(8, cer_id_lupulo.getText().toString());
+            ss.setString(9, cer_id_malta.getText().toString());
+            ss.setString(10, cer_año.getText().toString());
+            ss.setString(11, cer_id_material4.getText().toString());
+            ss.setString(12, cer_id_tiempo_trasvase.getText().toString());
+            ss.execute();
+            c.cerrarConexion();
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
 
-        int r=3;
-
+    }
+    private void insertarLiquido(){
+    try {
+            c.abrirConexion();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            String s = "insert into liquido_frio values(?,?,?,?,?,?,?,?);";
+            PreparedStatement ss = c.getCon().prepareStatement(s);
+             ss.setString(1, lif_id_material2.getText().toString());
+            ss.setString(2, lif_id_agua.getText().toString());
+            ss.setString(3, lif_id_material.getText().toString());
+            ss.setString(4, lif_id_malta.getText().toString());
+            ss.setString(5, lif_id_material1.getText().toString());
+            ss.setString(6, lif_id_lupulo.getText().toString());
+            ss.setString(7, lif_metodo.getText().toString());
+            ss.setString(8, lif_temperatura.getText().toString());
+            
+            ss.execute();
+            c.cerrarConexion();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
     }
 
     @FXML
