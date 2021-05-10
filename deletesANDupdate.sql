@@ -7,6 +7,31 @@ and cec_numero=cel_numero
 and cec_fecha=cel_fecha 
 and cer_año=1974 ; 
 
+
+select * from cerveza;
+
+## MSF_id_material3  +  MSF_id_levadura  +  MSF_id_material2  +  MSF_id_agua +  MSF_id_material  + MSF_id_malta + MSF_id_material1 + MSF_id_lupulo
+delete mosto_sin_f,cerveza,cerveza_emb_cab , cerveza_emb_lin  from mosto_sin_f,cerveza,cerveza_emb_cab , cerveza_emb_lin  where msf_id_material3= ? and msf_id_levadura= ?
+and msf_id_material2= ? 
+and msf_id_agua= ? 
+and msf_id_material= ? 
+and msf_id_malta= ? 
+and msf_id_material1= ? 
+and msf_id_lupulo= ? 
+and cer_id_material3=msf_id_material3 
+and cer_id_levadura=msf_id_levadura 
+and cer_id_material2=msf_id_material2 
+and cer_id_material=msf_id_material 
+and cer_id_malta=msf_id_malta 
+and cer_id_material1=msf_id_material1 
+and cer_id_lupulo=msf_id_lupulo 
+and cer_año=cec_año  
+and cer_numero_sec=cec_numero_sec  
+and cec_numero=cel_numero  
+and cec_fecha=cel_fecha  ; 
+
+
+
 delete liquido_frio, mosto_sin_f, cerveza,cerveza_emb_cab , cerveza_emb_lin 
 from liquido_frio, mosto_sin_f, cerveza,cerveza_emb_cab , cerveza_emb_lin 
 where lif_id_material2=msf_id_agua
