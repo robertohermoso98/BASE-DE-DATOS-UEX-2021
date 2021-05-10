@@ -58,7 +58,7 @@ create table cerveza_emb_lin(
     primary key(cel_fecha,cel_numero,cel_id_material),
     foreign key (cel_id_material) references materiales (mat_id_material),
     foreign key (cel_fecha,cel_numero) references cerveza_emb_cab (cec_fecha, cec_numero));
-
+# on delte cascade al final del foreign key antes de la coma
 
 insert agua values( 1,'agua1',12345.123,12345.123,12345.123,12345.123);
 insert agua values(2,'agua2',12345.123,12345.123,12345.123,12345.123);
