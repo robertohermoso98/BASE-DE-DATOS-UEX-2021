@@ -37,10 +37,9 @@ public class Conexion {
     public boolean abrirConexion() throws Exception {
         try {
 
-
             String userName = "root";
             String password = "xcGUjA7Z@";
-            String database = "b3egw3goupxrzhhztdav";
+            String database = "dd"; // b3egw3goupxrzhhztdav
             String url = "jdbc:mysql://localhost:3306/" + database;
             Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
             con = DriverManager.getConnection(url, userName, password);
@@ -65,7 +64,6 @@ public class Conexion {
     public void cerrarConexion() throws SQLException {
         try {
             con.close();
-            System.out.println("Conexión cerrada");
         } catch (SQLException e) {
             throw new SQLException();
         }
@@ -109,95 +107,6 @@ public class Conexion {
             throw new SQLException ();
         }
         return datosDeLaTabla;
-    }
-
-
-
-/*
-    public  ResultSet datosTabla(String nombreDeLaTabla) throws SQLException {
-        int numColumnas=obtenerNombreDeColumnas(nombreDeLaTabla).size();
-        LinkedList<String>[] datosDeLaTabla = new LinkedList[numColumnas];
-        for (int i=0; i<numColumnas;i++){
-            datosDeLaTabla[i]=new LinkedList<String>();
-        }
-        // nos creamos una lista para guardar los nombres de las columnas
-        try {
-
-            st = con.createStatement();
-            rs = st.executeQuery("select * from "+nombreDeLaTabla+" ;");
-            return rs;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw new SQLException ();
-        }
-    }
-
- */
-
-
-    public void ProcesarResultados_At() {
-        System.out.println("---------------------------------");
-        System.out.println("Procesamos por nombre de atributo");
-        System.out.println("---------------------------------");
-        try {
-            while (rs.next()) {
-                String name = rs.getString("cantidad");
-
-                System.out.println(name);
-            }
-        } catch (Exception e) {
-
-            System.out.println("Error al visualizar datos");
-        }
-    }
-    // Se procesa por el campo recuperado
-    public void ProcesarResultados_Pos() {
-        System.out.println("---------------------------------");
-        System.out.println("Procesamos por Posicion          ");
-        System.out.println("---------------------------------");
-        try {
-            while (rs.next()) {
-                String name = rs.getString("Field");
-
-                System.out.println(name);
-
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("Error al visualizar datos");
-        }
-    }
-
-    // Se procesa por el campo recuperado
-    public void ProcesarComoString() {
-        System.out.println("---------------------------------");
-        System.out.println("Procesamos por String          ");
-        System.out.println("---------------------------------");
-        try {
-            while (rs.next()) {
-                String name = rs.getString(1);
-
-                System.out.println(name);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("Error al visualizar datos");
-        }
-    }
-
-
-
-
-
-   //  CREATE USER 'pabletaGC'@'%' IDENTIFIED BY '12bd123';
-    public void obtenerDatosTabla(String Query) {
-        try {
-            st = con.createStatement();
-            rs = st.executeQuery(Query);
-            System.out.println("Tabla abierta");
-        } catch (SQLException e) {
-            System.out.println("Error al Abrir tabla ");
-        }
     }
 
 

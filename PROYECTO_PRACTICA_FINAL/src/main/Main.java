@@ -17,6 +17,7 @@ public class Main extends Application {
 
         FXMLLoader loader = new FXMLLoader(getClass().
                 getResource("../fxml/main.fxml"));
+        setUserAgentStylesheet(STYLESHEET_CASPIAN);
 //Recuperamos el controller
         AnchorPane root = loader.load();
         Controller controller=(Controller) loader.getController();

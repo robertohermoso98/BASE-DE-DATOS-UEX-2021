@@ -8,11 +8,9 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Node;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
@@ -20,10 +18,13 @@ import javafx.util.Callback;
 import main.Main;
 
 import java.net.URL;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.ResourceBundle;
+
+import static javafx.application.Application.STYLESHEET_CASPIAN;
+import static javafx.application.Application.setUserAgentStylesheet;
 
 public class Controller {
 
@@ -31,6 +32,7 @@ public class Controller {
     private String tablaSelecionada;
     private Pane view;
     private int SecuenciaSQL;
+
 
     @FXML
     private BorderPane IDBoreder;
@@ -48,7 +50,10 @@ public class Controller {
             vie = new FXMLLoader().load(fileUrl);
 
         } catch (Exception e) {
-            e.getStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("ERROR");
+            alert.setContentText("Error al cargar la pagina");
+            alert.showAndWait();
         }
         return vie;
     }
@@ -72,7 +77,7 @@ public class Controller {
         if (s.equals("Insertar Mosto_sin_f")) {
             return 5;
         }
-        if (s.equals("")) {
+        if (s.equals("Modificar Cerveza")) {
             return 6;
         }
         if (s.equals("Mod. Liquido frio")) {
@@ -100,7 +105,10 @@ public class Controller {
         try {
             cn.abrirConexion();
         } catch (Exception e) {
-            e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("ERROR");
+            alert.setContentText("Error al abrrir la conexion");
+            alert.showAndWait();
         }
         try {
             // cojo la lista de nombres y los datos de la tabla
@@ -140,7 +148,124 @@ public class Controller {
                 table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
             }
         } catch (SQLException throwables) {
-            throwables.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("ERROR");
+            alert.setContentText("Error al cargar la tabla");
+            alert.showAndWait();
+        }
+    }
+
+    private void s1() {
+        LinkedList<String> listaNombresColumnas=new LinkedList<>();
+        LinkedList<String>[] datos;
+        LinkedList<Objetos> dat = new LinkedList<Objetos>();
+
+        String sentencia = "select year(cec_fecha) as 'Año embotellamiento', msf_tiempo_fermentacion as 'Tiempo Fermentacion' , " +
+                "mos_tiempo_maceracion as 'Tiempo Maceracion', agu_denominacion as 'Nombre Agua' " +
+                "from cerveza_emb_cab inner join cerveza on cec_año=cer_año " +
+                "and cec_numero_sec=cer_numero_sec " +
+                "inner join mosto_sin_f on cer_id_material3=msf_id_material3 " +
+                "and cer_id_levadura=msf_id_levadura and cer_id_material2=msf_id_material2 and cer_id_agua=msf_id_agua and cer_id_material=msf_id_material and cer_id_malta=msf_id_malta and cer_id_material1=msf_id_material1 and cer_id_lupulo=msf_id_lupulo and msf_tiempo_fermentacion > 12 " +
+                "inner join levadura on msf_id_levadura=lev_id_levadura and " +
+                "lev_tipo_lev like 'L' " +
+                "inner join liquido_frio on msf_id_material2=lif_id_material2 and " +
+                "msf_id_agua=lif_id_agua and msf_id_material=lif_id_material and msf_id_malta=lif_id_malta and msf_id_material1=lif_id_material1 and msf_id_lupulo=lif_id_lupulo " +
+                "inner join liquido_dulce on lif_id_agua=lid_id_agua and " +
+                "lif_id_material=lid_id_material and lif_id_malta=lid_id_malta and lif_id_material1=lid_id_material1 and lif_id_lupulo=lid_id_lupulo " +
+                "inner join lupulo on lid_id_lupulo = lup_id_lupulo and " +
+                "lup_denominacion like 'Hellertaur Perle' inner join mosto on mos_id_agua=lid_id_agua and " +
+                "mos_id_material=lid_id_material and mos_id_malta=lid_id_malta and mos_id_material1=lid_id_material1 " +
+                "inner join agua on mos_id_agua=agu_id_agua and agu_cal<3 inner join malta_molida on mos_id_malta=mam_id_malta and " +
+                "mos_id_material1=mam_id_material                          inner join malta on mal_id_malta=mam_id_malta and " +
+                "mal_denominacion like 'Trigo' " +
+                "where cec_fecha <'2014/01/01' order by 1 asc, 4 desc;";
+        try {
+            c.abrirConexion();
+            LinkedList<String>[] datosDeLaTabla = new LinkedList[4];
+            for (int i = 0; i < 4; i++) {
+                datosDeLaTabla[i] = new LinkedList<String>();
+            }
+            // nos creamos una lista para guardar los nombres de las columnas
+
+            c.abrirConexion();
+            Statement st = c.getCon().createStatement();
+            ResultSet rs = st.executeQuery(sentencia);
+            int posicion = 0;
+            while (rs.next()) {
+                for (int i = 0; i < 4; i++) {
+                    datosDeLaTabla[i].add(rs.getString(i + 1));
+                }
+                posicion++;
+            }
+            datos = datosDeLaTabla;
+            // creo la lista con los objetos
+
+            for (int i = 0; i < datos[0].size(); i++) {
+                dat.add(new Objetos());
+            }
+            for (int e = 0; e < datos.length; e++) {
+                int contador = 0;
+                Iterator it = datos[e].iterator();
+                while (it.hasNext()) {
+                    String nombre = (String) it.next();
+                    dat.get(contador).getDatos().add(nombre);
+                    contador++;
+
+                }
+            }
+            ObservableList data = FXCollections.observableList(dat);
+            table.setItems(data);
+            listaNombresColumnas.add("Año Embotellamiento");
+            listaNombresColumnas.add("Tiempo Fermentación");
+            listaNombresColumnas.add("Tiempo Maceración");
+            listaNombresColumnas.add("Nombre Agua");
+            //la tableview es table
+            for (int i = 0; i < 4; i++) {
+                final int cont = i;
+                TableColumn veces = new TableColumn();
+                veces.setText(listaNombresColumnas.get(i));
+                veces.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Objetos, String>, ObservableValue<String>>() {
+                    @Override
+                    public ObservableValue<String> call(TableColumn.CellDataFeatures<Objetos, String> p) {
+                        return new SimpleStringProperty(String.valueOf(p.getValue().getDatos().get(cont)));
+                    }
+                });
+                table.getColumns().add(veces);
+            }
+            //table.getColumns().setAll(veces);
+            table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+
+        } catch (Exception throwables) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("ERROR");
+            alert.setContentText("Error al cargar la sentencia");
+            alert.showAndWait();
+        }
+
+
+    }
+    private void s3(){
+        String s=" update malta, mosto, malta_molida set mal_precio=mal_precio * 1.05 where mos_temperatura>80 and mos_id_malta=mam_id_malta and mos_id_material1=mam_id_material and mam_id_malta=mal_id_malta;";
+        String s2=" update mosto, agua set agu_precio=agu_precio*1.05 where mos_temperatura>80 and mos_id_agua=agu_id_agua;";
+        try {
+            c.abrirConexion();
+        } catch (Exception e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("ERROR");
+            alert.setContentText("Error al abrrir la conexion");
+            alert.showAndWait();
+        }
+        try {
+            PreparedStatement ss = c.getCon().prepareStatement(s);
+            ss.execute();
+            PreparedStatement ss2 = c.getCon().prepareStatement(s2);
+            ss2.execute();
+            c.cerrarConexion();
+        } catch (SQLException throwables) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("ERROR");
+            alert.setContentText("Error al cargar la sentencia");
+            alert.showAndWait();
         }
     }
 
@@ -283,12 +408,12 @@ public class Controller {
     @FXML
     void modifyMosto(ActionEvent event) {
 
-        IDBoreder.setRight(getPage("modifymostosinf"));
+        IDBoreder.setRight(getPage("modifycarmostosinf"));
     }
 
     @FXML
     void MostrarSentencia1(ActionEvent event) {
-
+        s1();
     }
 
     @FXML
@@ -298,7 +423,7 @@ public class Controller {
 
     @FXML
     void MostrarSentencia3(ActionEvent event) {
-
+        s3();
     }
 
 /*
@@ -367,6 +492,15 @@ public class Controller {
 
     @FXML
     private TextField cer_id_tiempo_trasvase;
+
+    @FXML
+    private TextField cer_numero_sec1;
+
+    @FXML
+    private TextField cer_año1;
+
+    @FXML
+    private TextField cer_tiempo_trasvase;
     /*
     OBJETOS DE FXML mosto
      */
@@ -403,11 +537,8 @@ public class Controller {
     @FXML
     private TextField msf_temperatura;
 
-
-
     @FXML
     void aceptar(ActionEvent event) {
-        System.out.println(identificarSecuencia(idScena.getText().toString()));
         try {
             c.abrirConexion();
         } catch (Exception e) {
@@ -433,10 +564,13 @@ public class Controller {
                 insertarMosto();
                 break;
             case 6:
+                modificarCerveza();
                 break;
             case 7:
+                modificarLiqudio();
                 break;
             case 8:
+                modificarMosto();
                 break;
         }
     }
@@ -446,7 +580,10 @@ public class Controller {
         try {
             c.abrirConexion();
         } catch (Exception e) {
-            e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("ERROR");
+            alert.setContentText("Error al abrir la conexio");
+            alert.showAndWait();
         }
         try {
             String s = "delete cerveza , cerveza_emb_cab , cerveza_emb_lin from cerveza , cerveza_emb_cab , cerveza_emb_lin where cer_año=cec_año and cer_numero_sec=cec_numero_sec and cec_numero=cel_numero and cec_fecha=cel_fecha and cer_año= ? and cer_numero_sec= ?;";
@@ -457,15 +594,21 @@ public class Controller {
             c.cerrarConexion();
 
         } catch (SQLException throwables) {
-            throwables.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("ERROR");
+            alert.setContentText("Error al cargar la sentencia, los datos pueden ser erroneos");
+            alert.showAndWait();
         }
     }
 
-    private void eliminarLiquido(){
+    private void eliminarLiquido() {
         try {
             c.abrirConexion();
         } catch (Exception e) {
-            e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("ERROR");
+            alert.setContentText("Error al abrrir la conexion");
+            alert.showAndWait();
         }
         try {
             String s = "delete liquido_frio, mosto_sin_f, cerveza,cerveza_emb_cab , cerveza_emb_lin from liquido_frio, mosto_sin_f, cerveza,cerveza_emb_cab , cerveza_emb_lin where lif_id_material2= ? and lif_id_agua= ? and lif_id_material= ? and lif_id_malta= ? and lif_id_material1= ? and lif_id_lupulo= ? and lif_id_material2=msf_id_agua and lif_id_agua=msf_id_agua and lif_id_material=msf_id_material and lif_id_malta=msf_id_malta and lif_id_material1=msf_id_material1 and lif_id_lupulo=msf_id_lupulo and cer_id_material3=msf_id_material3 and cer_id_levadura=msf_id_levadura and cer_id_material2=msf_id_material2 and cer_id_material=msf_id_material and cer_id_malta=msf_id_malta and cer_id_material1=msf_id_material1 and cer_id_lupulo=msf_id_lupulo and cer_año=cec_año and cer_numero_sec=cec_numero_sec and cec_numero=cel_numero and cec_fecha=cel_fecha ;";
@@ -479,22 +622,28 @@ public class Controller {
             ss.execute();
             c.cerrarConexion();
         } catch (SQLException throwables) {
-            throwables.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("ERROR");
+            alert.setContentText("Error al cargar la sentencia, los datos pueden ser erroneos");
+            alert.showAndWait();
         }
     }
 
-    private void eleminarMosto(){
-    try {
+    private void eleminarMosto() {
+        try {
             c.abrirConexion();
         } catch (Exception e) {
-            e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("ERROR");
+            alert.setContentText("Error al abrrir la conexion");
+            alert.showAndWait();
         }
         try {
             String s = "delete mosto_sin_f,cerveza,cerveza_emb_cab , cerveza_emb_lin  from mosto_sin_f,cerveza,cerveza_emb_cab , cerveza_emb_lin  where msf_id_material3= ? and msf_id_levadura= ? and msf_id_material2= ? and msf_id_agua= ? and msf_id_material= ? and msf_id_malta= ? and msf_id_material1= ? and msf_id_lupulo= ? and cer_id_material3=msf_id_material3 and cer_id_levadura=msf_id_levadura and cer_id_material2=msf_id_material2 and cer_id_material=msf_id_material and cer_id_malta=msf_id_malta and cer_id_material1=msf_id_material1 and cer_id_lupulo=msf_id_lupulo and cer_año=cec_año and cer_numero_sec=cec_numero_sec and cec_numero=cel_numero and cec_fecha=cel_fecha  ;";
             ;
             PreparedStatement ss = c.getCon().prepareStatement(s);
             ss.setString(1, msf_id_material3.getText().toString());
-            ss.setString(2,msf_id_levadura.getText().toString());
+            ss.setString(2, msf_id_levadura.getText().toString());
             ss.setString(3, msf_id_material2.getText().toString());
             ss.setString(4, msf_id_agua.getText().toString());
             ss.setString(5, msf_id_material.getText().toString());
@@ -504,21 +653,27 @@ public class Controller {
             ss.execute();
             c.cerrarConexion();
         } catch (SQLException throwables) {
-            throwables.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("ERROR");
+            alert.setContentText("Error al cargar la sentencia, los datos pueden ser erroneos");
+            alert.showAndWait();
         }
     }
 
-    private void insertarMosto(){
+    private void insertarMosto() {
         try {
             c.abrirConexion();
         } catch (Exception e) {
-            e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("ERROR");
+            alert.setContentText("Error al abrrir la conexion");
+            alert.showAndWait();
         }
         try {
             String s = "insert into mosto_sin_f values(?,?,?,?,?,?,?,?,?,?,?);";
             PreparedStatement ss = c.getCon().prepareStatement(s);
             ss.setString(1, msf_id_material3.getText().toString());
-            ss.setString(2,msf_id_levadura.getText().toString());
+            ss.setString(2, msf_id_levadura.getText().toString());
             ss.setString(3, msf_id_material2.getText().toString());
             ss.setString(4, msf_id_agua.getText().toString());
             ss.setString(5, msf_id_material.getText().toString());
@@ -531,48 +686,61 @@ public class Controller {
             ss.execute();
             c.cerrarConexion();
         } catch (SQLException throwables) {
-            throwables.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("ERROR");
+            alert.setContentText("Error al cargar la sentencia, los datos pueden ser erroneos");
+            alert.showAndWait();
         }
     }
 
-    private void insertarCerveza(){
-     try {
+    private void insertarCerveza() {
+        try {
             c.abrirConexion();
         } catch (Exception e) {
-            e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("ERROR");
+            alert.setContentText("Error al abrrir la conexion");
+            alert.showAndWait();
         }
         try {
             String s = "insert into cerveza values(?,?,?,?,?,?,?,?,?,?,?,?);";
             PreparedStatement ss = c.getCon().prepareStatement(s);
-            ss.setString(1, cer_numero_sec.getText().toString());
-            ss.setString(2,cer_id_material.getText().toString());
-            ss.setString(3, cer_id_material3.getText().toString());
-            ss.setString(4, cer_id_levadura.getText().toString());
-            ss.setString(5, cer_id_material2.getText().toString());
-            ss.setString(6, cer_id_agua.getText().toString());
-            ss.setString(7, cer_id_material1.getText().toString());
-            ss.setString(8, cer_id_lupulo.getText().toString());
+            ss.setString(1, cer_año.getText().toString());
+            ss.setString(2, cer_numero_sec.getText().toString());
+            ss.setString(3, cer_id_material4.getText().toString());
+            ss.setString(4, cer_id_material3.getText().toString());
+            ss.setString(5, cer_id_levadura.getText().toString());
+            ss.setString(6, cer_id_material2.getText().toString());
+            ss.setString(7, cer_id_agua.getText().toString());
+            ss.setString(8, cer_id_material.getText().toString());
             ss.setString(9, cer_id_malta.getText().toString());
-            ss.setString(10, cer_año.getText().toString());
-            ss.setString(11, cer_id_material4.getText().toString());
+            ss.setString(10, cer_id_material1.getText().toString());
+            ss.setString(11, cer_id_lupulo.getText().toString());
             ss.setString(12, cer_id_tiempo_trasvase.getText().toString());
             ss.execute();
             c.cerrarConexion();
         } catch (SQLException throwables) {
-            throwables.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("ERROR");
+            alert.setContentText("Error al cargar la sentencia, los datos pueden ser erroneos");
+            alert.showAndWait();
         }
 
     }
-    private void insertarLiquido(){
-    try {
+
+    private void insertarLiquido() {
+        try {
             c.abrirConexion();
         } catch (Exception e) {
-            e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("ERROR");
+            alert.setContentText("Error al abrrir la conexion");
+            alert.showAndWait();
         }
         try {
             String s = "insert into liquido_frio values(?,?,?,?,?,?,?,?);";
             PreparedStatement ss = c.getCon().prepareStatement(s);
-             ss.setString(1, lif_id_material2.getText().toString());
+            ss.setString(1, lif_id_material2.getText().toString());
             ss.setString(2, lif_id_agua.getText().toString());
             ss.setString(3, lif_id_material.getText().toString());
             ss.setString(4, lif_id_malta.getText().toString());
@@ -580,11 +748,290 @@ public class Controller {
             ss.setString(6, lif_id_lupulo.getText().toString());
             ss.setString(7, lif_metodo.getText().toString());
             ss.setString(8, lif_temperatura.getText().toString());
-            
+
             ss.execute();
             c.cerrarConexion();
         } catch (SQLException throwables) {
-            throwables.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("ERROR");
+            alert.setContentText("Error al cargar la sentencia, los datos pueden ser erroneos");
+            alert.showAndWait();
+        }
+    }
+
+    private void modificarLiqudio() {
+        if (lif_metodo.getText().toString().equals("") && lif_temperatura.getText().toString().equals("")) {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Alerta");
+            alert.setContentText("Alerta no se ha introducido ningun valor");
+            alert.showAndWait();
+        } else {
+            if (!lif_metodo.getText().toString().equals(" ")) {
+                String s = " update liquido_frio set lif_metodo= ? where lif_id_material2= ? and lif_id_agua= ? and lif_id_material= ? and lif_id_malta= ? and lif_id_material1= ? and lif_id_lupulo= ? ;";
+                try {
+                    c.abrirConexion();
+                } catch (Exception e) {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("ERROR");
+                    alert.setContentText("Error al abrrir la conexion");
+                    alert.showAndWait();
+                }
+                try {
+                    PreparedStatement ss = c.getCon().prepareStatement(s);
+                    ss.setString(1, "'" + lif_metodo.getText().toString() + "'");
+                    ss.setString(2, lif_id_material2.getText().toString());
+                    ss.setString(3, lif_id_agua.getText().toString());
+                    ss.setString(4, lif_id_material.getText().toString());
+                    ss.setString(5, lif_id_malta.getText().toString());
+                    ss.setString(6, lif_id_material1.getText().toString());
+                    ss.setString(7, lif_id_lupulo.getText().toString());
+                    ss.execute();
+                    c.cerrarConexion();
+                } catch (SQLException throwables) {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("ERROR");
+                    alert.setContentText("Error al cargar la sentencia, los datos pueden ser erroneos");
+                    alert.showAndWait();
+                }
+            }
+            if (!lif_temperatura.getText().toString().equals("")) {
+                String s = " update liquido_frio set lif_temperatura= ? where lif_id_material2= ? and lif_id_agua= ? and lif_id_material= ? and lif_id_malta= ? and lif_id_material1= ? and lif_id_lupulo= ? ;";
+                try {
+                    c.abrirConexion();
+                } catch (Exception e) {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("ERROR");
+                    alert.setContentText("Error al abrrir la conexion");
+                    alert.showAndWait();
+                }
+                try {
+                    PreparedStatement ss = c.getCon().prepareStatement(s);
+                    ss.setString(1, lif_temperatura.getText().toString());
+                    ss.setString(2, lif_id_material2.getText().toString());
+                    ss.setString(3, lif_id_agua.getText().toString());
+                    ss.setString(4, lif_id_material.getText().toString());
+                    ss.setString(5, lif_id_malta.getText().toString());
+                    ss.setString(6, lif_id_material1.getText().toString());
+                    ss.setString(7, lif_id_lupulo.getText().toString());
+                    ss.execute();
+                    c.cerrarConexion();
+                } catch (SQLException throwables) {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("ERROR");
+                    alert.setContentText("Error al cargar la sentencia, los datos pueden ser erroneos");
+                    alert.showAndWait();
+                }
+            }
+        }
+    }
+
+    private void modificarCerveza() {
+        boolean anio = false;
+        boolean num = false;
+        if (cer_año1.getText().toString().equals("")
+                && cer_numero_sec1.getText().toString().equals("")
+                && cer_tiempo_trasvase.getText().toString().equals("")) {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Alerta");
+            alert.setContentText("Alerta no se ha introducido ningun valor");
+            alert.showAndWait();
+
+        } else {
+
+            if (!cer_año1.getText().toString().equals("") && !cer_año1.getText().toString().equals(" ")) {
+                String s = " update cerveza , cerveza_emb_cab , cerveza_emb_lin set cer_año= ? , cec_año= ? where cer_año=cec_año and cer_numero_sec=cec_numero_sec and cec_numero=cel_numero and cec_fecha=cel_fecha and cer_año= ? and cer_numero_sec= ? ;";
+                try {
+                    c.abrirConexion();
+                } catch (Exception e) {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("ERROR");
+                    alert.setContentText("Error al abrrir la conexion");
+                    alert.showAndWait();
+                }
+                try {
+                    PreparedStatement ss = c.getCon().prepareStatement(s);
+                    ss.setString(1, cer_año1.getText().toString());
+                    ss.setString(2, cer_año1.getText().toString());
+                    ss.setString(3, cer_año.getText().toString());
+                    ss.setString(4, cer_numero_sec.getText().toString());
+                    ss.execute();
+                    c.cerrarConexion();
+                    anio = true;
+                } catch (SQLException throwables) {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("ERROR");
+                    alert.setContentText("Error al cargar la sentencia, los datos pueden ser erroneos");
+                    alert.showAndWait();
+                }
+
+
+            }
+            if (!cer_numero_sec1.getText().toString().equals(" ") && !cer_numero_sec1.getText().toString().equals("")) {
+                String s = " update cerveza , cerveza_emb_cab , cerveza_emb_lin set cer_numero_sec= ? , cec_numero_sec= ? where cer_año=cec_año and cer_numero_sec=cec_numero_sec and cec_numero=cel_numero and cec_fecha=cel_fecha and cer_año= ? and cer_numero_sec= ? ;";
+                try {
+                    c.abrirConexion();
+                } catch (Exception e) {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("ERROR");
+                    alert.setContentText("Error al abrrir la conexion");
+                    alert.showAndWait();
+                }
+                try {
+                    PreparedStatement ss = c.getCon().prepareStatement(s);
+                    ss.setString(1, cer_numero_sec1.getText().toString());
+                    ss.setString(2, cer_numero_sec1.getText().toString());
+                    if (anio = false) {
+                        ss.setString(3, cer_año.getText().toString());
+                    } else {
+                        ss.setString(3, cer_año1.getText().toString());
+                    }
+                    ss.setString(4, cer_numero_sec.getText().toString());
+                    ss.execute();
+                    c.cerrarConexion();
+                    num = true;
+                } catch (SQLException throwables) {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("ERROR");
+                    alert.setContentText("Error al cargar la sentencia, los datos pueden ser erroneos");
+                    alert.showAndWait();
+                }
+
+            }
+            if (!cer_tiempo_trasvase.getText().toString().equals(" ") && !cer_tiempo_trasvase.getText().toString().equals("")) {
+                String s = " update cerveza  set cer_tiempo_trasvase= ? where cer_año= ? and cer_numero_sec= ? ;";
+                try {
+                    c.abrirConexion();
+                } catch (Exception e) {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("ERROR");
+                    alert.setContentText("Error al abrrir la conexion");
+                    alert.showAndWait();
+                }
+                try {
+                    PreparedStatement ss = c.getCon().prepareStatement(s);
+                    ss.setString(1, cer_tiempo_trasvase.getText().toString());
+                    if (anio = false) {
+                        ss.setString(2, cer_año.getText().toString());
+                    } else {
+                        ss.setString(2, cer_año1.getText().toString());
+                    }
+                    if (num = false) {
+                        ss.setString(3, cer_numero_sec.getText().toString());
+                    } else {
+                        ss.setString(3, cer_numero_sec1.getText().toString());
+                    }
+                    ss.execute();
+                    c.cerrarConexion();
+                } catch (SQLException throwables) {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("ERROR");
+                    alert.setContentText("Error al cargar la sentencia, los datos pueden ser erroneos");
+                    alert.showAndWait();
+                }
+            }
+        }
+    }
+
+    private void modificarMosto() {
+        if (msf_tiempo_fermentacion.getText().toString().equals("")
+                && msf_temperatura.getText().toString().equals("")
+                && msf_tiempo_oxidacion.getText().toString().equals("")) {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Alerta");
+            alert.setContentText("Alerta no se ha introducido ningun valor");
+            alert.showAndWait();
+
+        } else {
+            if (!msf_tiempo_oxidacion.getText().toString().equals(" ") && !msf_tiempo_oxidacion.getText().toString().equals("")) {
+                String s = " update mosto_sin_f set msf_tiempo_oxidacion = ? where msf_id_material3 = ? and  msf_id_levadura = ? and  msf_id_material2 = ? and msf_id_agua = ? and msf_id_material = ? and msf_id_malta= ? and msf_id_material1= ? and msf_id_lupulo= ? ;";
+                try {
+                    c.abrirConexion();
+                } catch (Exception e) {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("ERROR");
+                    alert.setContentText("Error al abrrir la conexion");
+                    alert.showAndWait();
+                }
+                try {
+                    PreparedStatement ss = c.getCon().prepareStatement(s);
+                    ss.setString(1, msf_tiempo_oxidacion.getText().toString());
+                    ss.setString(2, msf_id_material3.getText().toString());
+                    ss.setString(3, msf_id_levadura.getText().toString());
+                    ss.setString(4, msf_id_material2.getText().toString());
+                    ss.setString(5, msf_id_agua.getText().toString());
+                    ss.setString(6, msf_id_material.getText().toString());
+                    ss.setString(7, msf_id_malta.getText().toString());
+                    ss.setString(8, msf_id_material1.getText().toString());
+                    ss.setString(9, msf_id_lupulo.getText().toString());
+                    ss.execute();
+                    c.cerrarConexion();
+                } catch (SQLException throwables) {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("ERROR");
+                    alert.setContentText("Error al cargar la sentencia, los datos pueden ser erroneos");
+                    alert.showAndWait();
+                }
+            }
+            if (!msf_temperatura.getText().toString().equals(" ") && !msf_temperatura.getText().toString().equals("")) {
+                String s = " update mosto_sin_f set msf_temperatura =  ? where msf_id_material3 = ? and  msf_id_levadura = ? and  msf_id_material2 = ? and msf_id_agua = ? and msf_id_material = ? and msf_id_malta= ? and msf_id_material1= ? and msf_id_lupulo= ? ;";
+                try {
+                    c.abrirConexion();
+                } catch (Exception e) {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("ERROR");
+                    alert.setContentText("Error al abrrir la conexion");
+                    alert.showAndWait();
+                }
+                try {
+                    PreparedStatement ss = c.getCon().prepareStatement(s);
+                    ss.setString(1, msf_temperatura.getText().toString());
+                    ss.setString(2, msf_id_material3.getText().toString());
+                    ss.setString(3, msf_id_levadura.getText().toString());
+                    ss.setString(4, msf_id_material2.getText().toString());
+                    ss.setString(5, msf_id_agua.getText().toString());
+                    ss.setString(6, msf_id_material.getText().toString());
+                    ss.setString(7, msf_id_malta.getText().toString());
+                    ss.setString(8, msf_id_material1.getText().toString());
+                    ss.setString(9, msf_id_lupulo.getText().toString());
+                    ss.execute();
+                    c.cerrarConexion();
+                } catch (SQLException throwables) {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("ERROR");
+                    alert.setContentText("Error al cargar la sentencia, los datos pueden ser erroneos");
+                    alert.showAndWait();
+                }
+            }
+            if (!msf_tiempo_fermentacion.getText().toString().equals(" ") && !msf_tiempo_fermentacion.getText().toString().equals("")) {
+                String s = " update mosto_sin_f set msf_tiempo_fermentacion = ? where msf_id_material3 = ? and  msf_id_levadura = ? and  msf_id_material2 = ? and msf_id_agua = ? and msf_id_material = ? and msf_id_malta= ? and msf_id_material1= ? and msf_id_lupulo= ? ;";
+                try {
+                    c.abrirConexion();
+                } catch (Exception e) {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("ERROR");
+                    alert.setContentText("Error al abrrir la conexion");
+                    alert.showAndWait();
+                }
+                try {
+                    PreparedStatement ss = c.getCon().prepareStatement(s);
+                    ss.setString(1, msf_tiempo_fermentacion.getText().toString());
+                    ss.setString(2, msf_id_material3.getText().toString());
+                    ss.setString(3, msf_id_levadura.getText().toString());
+                    ss.setString(4, msf_id_material2.getText().toString());
+                    ss.setString(5, msf_id_agua.getText().toString());
+                    ss.setString(6, msf_id_material.getText().toString());
+                    ss.setString(7, msf_id_malta.getText().toString());
+                    ss.setString(8, msf_id_material1.getText().toString());
+                    ss.setString(9, msf_id_lupulo.getText().toString());
+                    ss.execute();
+                    c.cerrarConexion();
+                } catch (SQLException throwables) {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("ERROR");
+                    alert.setContentText("Error al cargar la sentencia, los datos pueden ser erroneos");
+                    alert.showAndWait();
+                }
+            }
         }
     }
 
