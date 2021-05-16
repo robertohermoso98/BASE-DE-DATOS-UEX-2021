@@ -155,6 +155,12 @@ public class Controller {
         }
     }
 
+
+
+
+
+
+
     private void s1() {
         LinkedList<String> listaNombresColumnas=new LinkedList<>();
         LinkedList<String>[] datos;
@@ -221,6 +227,78 @@ public class Controller {
             listaNombresColumnas.add("Nombre Agua");
             //la tableview es table
             for (int i = 0; i < 4; i++) {
+                final int cont = i;
+                TableColumn veces = new TableColumn();
+                veces.setText(listaNombresColumnas.get(i));
+                veces.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Objetos, String>, ObservableValue<String>>() {
+                    @Override
+                    public ObservableValue<String> call(TableColumn.CellDataFeatures<Objetos, String> p) {
+                        return new SimpleStringProperty(String.valueOf(p.getValue().getDatos().get(cont)));
+                    }
+                });
+                table.getColumns().add(veces);
+            }
+            //table.getColumns().setAll(veces);
+            table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+
+        } catch (Exception throwables) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("ERROR");
+            alert.setContentText("Error al cargar la sentencia");
+            alert.showAndWait();
+        }
+
+
+    }
+
+    private void s2() {
+        LinkedList<String> listaNombresColumnas=new LinkedList<>();
+        LinkedList<String>[] datos;
+        LinkedList<Objetos> dat = new LinkedList<Objetos>();
+
+        String sentencia = "\n" +
+                "select lup_denominacion as 'Nombre lupulo', count(*) as 'Nº Cervezas embotelladas'  from cerveza_emb_cab inner join cerveza\ton cec_año=cer_año and cec_numero_sec=cer_numero_sec inner join mosto_sin_f on cer_id_material3=msf_id_material3 and cer_id_levadura=msf_id_levadura and cer_id_material2=msf_id_material2  and cer_id_agua=msf_id_agua and cer_id_material=msf_id_material  and cer_id_malta=msf_id_malta and cer_id_material1=msf_id_material1 and cer_id_lupulo=msf_id_lupulo inner join materiales as a on a.mat_id_material=msf_id_material3 and a.mat_denominacion like 'Barril Lacado'  inner join levadura\ton\tmsf_id_levadura=lev_id_levadura and lev_tipo_lev like 'A' inner join liquido_frio on msf_id_material2=lif_id_material2 and msf_id_agua=lif_id_agua and msf_id_material=lif_id_material  and msf_id_malta=lif_id_malta and msf_id_material1=lif_id_material1 and msf_id_lupulo=lif_id_lupulo inner join liquido_dulce on lif_id_agua=lid_id_agua and lif_id_material=lid_id_material and lif_id_malta=lid_id_malta  and lif_id_material1=lid_id_material1 and lif_id_lupulo=lid_id_lupulo inner join lupulo on lid_id_lupulo = lup_id_lupulo  inner join cerveza_emb_lin on cel_fecha=cec_fecha and cel_numero=cec_numero inner join materiales as b on cel_id_material=b.mat_id_material  and b.mat_denominacion like 'Botella de cristal negro ahumado' where year(cec_fecha) = 2015 group by lup_denominacion " +
+                "having count(*) >300 order by 1 asc, 2 asc ;";
+        try {
+            c.abrirConexion();
+            LinkedList<String>[] datosDeLaTabla = new LinkedList[2];
+            for (int i = 0; i < 2; i++) {
+                datosDeLaTabla[i] = new LinkedList<String>();
+            }
+            // nos creamos una lista para guardar los nombres de las columnas
+
+            c.abrirConexion();
+            Statement st = c.getCon().createStatement();
+            ResultSet rs = st.executeQuery(sentencia);
+            int posicion = 0;
+            while (rs.next()) {
+                for (int i = 0; i < 2; i++) {
+                    datosDeLaTabla[i].add(rs.getString(i + 1));
+                }
+                posicion++;
+            }
+            datos = datosDeLaTabla;
+            // creo la lista con los objetos
+
+            for (int i = 0; i < datos[0].size(); i++) {
+                dat.add(new Objetos());
+            }
+            for (int e = 0; e < datos.length; e++) {
+                int contador = 0;
+                Iterator it = datos[e].iterator();
+                while (it.hasNext()) {
+                    String nombre = (String) it.next();
+                    dat.get(contador).getDatos().add(nombre);
+                    contador++;
+
+                }
+            }
+            ObservableList data = FXCollections.observableList(dat);
+            table.setItems(data);
+            listaNombresColumnas.add("Nombre lupulo");
+            listaNombresColumnas.add("Nº Cervezas embotelladas");
+            //la tableview es table
+            for (int i = 0; i < 2; i++) {
                 final int cont = i;
                 TableColumn veces = new TableColumn();
                 veces.setText(listaNombresColumnas.get(i));
@@ -417,9 +495,7 @@ public class Controller {
     }
 
     @FXML
-    void MostrarSentencia2(ActionEvent event) {
-
-    }
+    void MostrarSentencia2(ActionEvent event) { s2(); }
 
     @FXML
     void MostrarSentencia3(ActionEvent event) {
